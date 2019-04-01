@@ -9,27 +9,40 @@ class ApplicationController < Sinatra::Base
   end
 
   get '/' do
-    "Welcome to Fwitter!"
+    erb :index
   end
 
   get '/signup' do
-    erb :'signup'
+    erb :signup
   end
 
   post '/signup' do
-    @user = User.create(name: params["name"], email: params["email"], password: params["password"])
-    @user.save
-    session[:user_id] = @user.id
-    puts params
+    @user = User.new(params)
 
-    redirect to '/twitter_index'
+     if @user.username == "" || @user.email == "" || @user.password == ""
+      redirect to "/signup"
+    elsif @user.save
+      session[:id] = @user.id
+      redirect to "/tweets"
+    else
+      redirect to "/signup"
+    end
   end
 
   get '/login' do
-
+    if logged_in?(session)
+      current_user(session)
+      redirect to "/tweets"
+    else
+      erb :'users/login'
+    end
   end
 
-  get '/tweets/new' do
-    erb :'/tweets/new'
+  get '/logout' do
+    if logged_in?(session)
+      session.clear
+    end
+    redirect to "/login"
   end  
+
 end
