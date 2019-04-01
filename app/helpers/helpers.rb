@@ -7,10 +7,7 @@ class Helpers
   end
 
   def logged_in?(session)
-   if session[:id] != nil
-     user_id = current_user(session).id
-     session[:id] == user_id ? true : false
-   end
+     session.has_key?(:id)
   end
 
   def current_tweet(id)
