@@ -1,12 +1,11 @@
 
-require 'sinatra/base'
-require 'rack-flash'
+
 
 class TweetsController < ApplicationController
 
   enable :method_override
   enable :sessions
-  use Rack::Flash
+
 
 
   get '/tweets' do
@@ -80,8 +79,16 @@ class TweetsController < ApplicationController
       end
    end
 
-
-
-
-
+   delete '/tweets/:id' do
+      if logged_in?(session)
+          @user = current_user(session)
+          @tweet = current_tweet(params[:id])
+        if @tweet.user_id == @user.id
+            @tweet.delete
+            redirect to '/tweets'
+        else
+            redirect to "/tweets"
+        end
+      end
+    end
 end
